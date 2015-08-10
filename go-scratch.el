@@ -32,7 +32,8 @@
 
 (defgroup go-scratch nil
   "Scratch buffer for go."
-  :prefix "go-scratch")
+  :prefix "go-scratch"
+  :group 'languages)
 
 (defcustom go-scratch-timeout 3
   "Timeout length for scratch processes, in seconds."
@@ -97,15 +98,15 @@ Program stdout will be printed to the message output."
                        (kill-process proc)
                        (message "Go scratch process timed out.")))))))
 
-(defun go-scratch--run-sentinal (proc status)
-  "Handle process change for go run process PROC and status STATUS."
+(defun go-scratch--run-sentinal (proc _)
+  "Handle process change for go run process PROC."
   (when (eq (process-status proc) 'exit)
     (let ((success (zerop (process-exit-status proc))))
       (with-current-buffer (get-buffer go-scratch-outbuf)
         ;; Trim extra newline
         (goto-char (- (point-max) 1))
         (when (looking-at-p "\n")
-          (delete-forward-char 1))
+          (delete-char 1))
 
         (if success
             (message "%s" (buffer-string))
